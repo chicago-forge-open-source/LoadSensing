@@ -23,6 +23,12 @@ import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.UserStateDetails;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
 import com.github.mikephil.charting.charts.LineChart;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.UUID;
@@ -34,7 +40,7 @@ import no.nordicsemi.android.thingylib.ThingySdkManager;
 import static com.acn.loadsensing.deviceScan.BleRecyclerAdapter.EXTRA_BLUETOOTH;
 import static com.acn.loadsensing.deviceScan.DeviceScanActivity.INITIAL_CONFIGURATION_RESULT;
 
-public class MainActivity extends AppCompatActivity implements ThingySdkManager.ServiceConnectionListener {
+public class MainActivity extends AppCompatActivity implements ThingySdkManager.ServiceConnectionListener, OnMapReadyCallback {
 
     private MainActivityViewModel viewModel;
     private ThingySdkManager thingySdkManager;
@@ -45,13 +51,17 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     private static final String LOG_TAG = "***";
     private static final String CUSTOMER_SPECIFIC_IOT_ENDPOINT = "a2soq6ydozn6i0-ats.iot.us-west-2.amazonaws.com";
     private AWSHelper awsHelper;
-
+    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         configureCharts();
         binding.setViewModel(viewModel);
@@ -148,12 +158,21 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     }
 
     private void configureCharts() {
-        LineChart gravityChart = findViewById(R.id.line_chart_gravity_vector);
-        LineChart accelerationChart = findViewById(R.id.line_chart_acceleration_vector);
-
-        chartManager = new LineChartManager(gravityChart, accelerationChart);
-        chartManager.prepareVectorChart(gravityChart, -10f, 10f, "Gravity Chart");
-        chartManager.prepareVectorChart(accelerationChart, -5f, 5f, "Acceleration Chart");
+//        LineChart gravityChart = findViewById(R.id.line_chart_gravity_vector);
+//        LineChart accelerationChart = findViewById(R.id.line_chart_acceleration_vector);
+//
+//        chartManager = new LineChartManager(gravityChart, accelerationChart);
+//        chartManager.prepareVectorChart(gravityChart, -10f, 10f, "Gravity Chart");
+//        chartManager.prepareVectorChart(accelerationChart, -5f, 5f, "Acceleration Chart");
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
 }
