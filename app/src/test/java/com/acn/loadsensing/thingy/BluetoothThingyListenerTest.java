@@ -3,7 +3,6 @@ package com.acn.loadsensing.thingy;
 import android.bluetooth.BluetoothDevice;
 import android.widget.ProgressBar;
 
-import com.acn.loadsensing.LineChartManager;
 import com.acn.loadsensing.MainActivityViewModel;
 import com.acn.loadsensing.MapManager;
 import com.acn.loadsensing.helper.AWSHelper;

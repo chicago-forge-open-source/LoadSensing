@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModel;
 
 import com.acn.loadsensing.bleItem.BleItem;
 import com.acn.loadsensing.thingy.ThingyService;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
 import no.nordicsemi.android.thingylib.ThingySdkManager;
 
@@ -57,5 +59,4 @@ public class MainActivityViewModel extends ViewModel implements Observable {
     private void notifyPropertyChanged(int fieldId) {
         callbacks.notifyCallbacks(this, fieldId, null);
     }
-
 }

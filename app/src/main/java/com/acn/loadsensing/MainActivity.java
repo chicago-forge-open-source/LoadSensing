@@ -46,7 +46,7 @@ import no.nordicsemi.android.thingylib.ThingySdkManager;
 import static com.acn.loadsensing.deviceScan.BleRecyclerAdapter.EXTRA_BLUETOOTH;
 import static com.acn.loadsensing.deviceScan.DeviceScanActivity.INITIAL_CONFIGURATION_RESULT;
 
-public class MainActivity extends AppCompatActivity implements ThingySdkManager.ServiceConnectionListener, OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements ThingySdkManager.ServiceConnectionListener {
 
     private MainActivityViewModel viewModel;
     private ThingySdkManager thingySdkManager;
@@ -57,20 +57,6 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     private static final String LOG_TAG = "***";
     private static final String CUSTOMER_SPECIFIC_IOT_ENDPOINT = "a2soq6ydozn6i0-ats.iot.us-west-2.amazonaws.com";
     private AWSHelper awsHelper;
-    private GoogleMap mMap;
-
-    LatLng dropOffCenter = new LatLng(41.8748568, -87.6383141);
-    LatLng rushUniversityHospital = new LatLng(41.8747095, -87.6706407);
-    LatLng theForgeChi = new LatLng(41.8960417, -87.6535176);
-    LatLng northwesternMemorialHospital = new LatLng(41.8934742, -87.6373256);
-    private MarkerOptions dropOff;
-    private BitmapDescriptor dropOffIcon;
-    private BitmapDescriptor currentLocationIcon;
-    private MarkerOptions currentLocation;
-    private BitmapDescriptor northwesternHospitalIcon;
-    private MarkerOptions northwesternHospital;
-    private BitmapDescriptor rushHospitalIcon;
-    private MarkerOptions rushHospital;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +66,8 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mapManager = new MapManager(this);
+        mapFragment.getMapAsync(mapManager);
 
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
@@ -89,8 +76,6 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
         componentHealthBar.setProgress(100);
         //  awsHelper = new AWSHelper(setUpAWS());
         // awsHelper.connectToAWS();
-        createMapMarkers();
-        mapManager = new MapManager();
 
         thingySdkManager = ThingySdkManager.getInstance();
         thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, mapManager, componentHealthBar, awsHelper);
@@ -175,62 +160,5 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
                 viewModel.afterInitialDiscoveryCompleted(thingySdkManager, device);
             }
         }
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        mMap.addMarker(dropOff);
-        mMap.addMarker(currentLocation);
-        mMap.addMarker(northwesternHospital);
-        mMap.addMarker(rushHospital);
-
-        mMap.addPolyline(new PolylineOptions().add(rushUniversityHospital).add(theForgeChi).add(northwesternMemorialHospital).add(dropOffCenter));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(rushUniversityHospital));
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(13));
-    }
-
-    private void createMapMarkers() {
-        createBitmaps();
-        dropOff = new MarkerOptions()
-                .position(dropOffCenter)
-                .title(getString(R.string.dropOffLocation))
-                .icon(dropOffIcon);
-
-        currentLocation = new MarkerOptions()
-                .position(theForgeChi)
-                .title(getString(R.string.currentLocation))
-                .icon(currentLocationIcon);
-
-        northwesternHospital = new MarkerOptions()
-                .position(northwesternMemorialHospital)
-                .title(getString(R.string.northwesternHospital))
-                .icon(northwesternHospitalIcon);
-
-        rushHospital = new MarkerOptions()
-                .position(rushUniversityHospital)
-                .title(getString(R.string.rushHospital))
-                .icon(rushHospitalIcon);
-    }
-
-    private void createBitmaps() {
-        dropOffIcon = BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(R.drawable.ic_delete));
-        currentLocationIcon = BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(R.drawable.ic_home));
-        northwesternHospitalIcon = BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(R.drawable.ic_nw_hospital));
-        rushHospitalIcon = BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(R.drawable.ic_rush_hospital));
-    }
-
-
-    public Bitmap getBitmapFromVectorDrawable(int drawableId) {
-        Drawable drawable = ContextCompat.getDrawable(this, drawableId);
-
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
     }
 }
