@@ -10,6 +10,10 @@
     <string name="device_address">Device Address</string>
     <string name="device_name">Device Name</string>
     <string name="header_device_name">No Device Connected</string>
-    <string name="component_health">Component Health</string>
+    <string name="load_weight">Load Weight</string>
     <string name="title_activity_maps">Map</string>
+    <string name="dropOffLocation">Drop Off Location</string>
+    <string name="currentLocation">The Forge</string>
+    <string name="northwesternHospital">Northwestern Memorial Hospital</string>
+    <string name="rushHospital">Rush University Hospital</string>
 </resources>

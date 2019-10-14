@@ -2,6 +2,9 @@ package com.acn.loadsensing;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +12,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -22,16 +26,18 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.UserStateDetails;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
-import com.github.mikephil.charting.charts.LineChart;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -54,10 +60,18 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     private AWSHelper awsHelper;
     private GoogleMap mMap;
 
-    LatLng dropOffCenter = new LatLng(41.8748568,-87.6383141);
-    LatLng rushUniversityHospital = new LatLng(41.8747095,-87.6706407);
-    LatLng theForgeChi = new LatLng(41.8960417,-87.6535176);
-    LatLng northwesternMemorialHospital = new LatLng(41.8934742,-87.6373256);
+    LatLng dropOffCenter = new LatLng(41.8748568, -87.6383141);
+    LatLng rushUniversityHospital = new LatLng(41.8747095, -87.6706407);
+    LatLng theForgeChi = new LatLng(41.8960417, -87.6535176);
+    LatLng northwesternMemorialHospital = new LatLng(41.8934742, -87.6373256);
+    private MarkerOptions dropOff;
+    private BitmapDescriptor dropOffIcon;
+    private BitmapDescriptor currentLocationIcon;
+    private MarkerOptions currentLocation;
+    private BitmapDescriptor northwesternHospitalIcon;
+    private MarkerOptions northwesternHospital;
+    private BitmapDescriptor rushHospitalIcon;
+    private MarkerOptions rushHospital;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +88,9 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
 
         componentHealthBar = findViewById(R.id.component_health_bar);
         componentHealthBar.setProgress(100);
-      //  awsHelper = new AWSHelper(setUpAWS());
-       // awsHelper.connectToAWS();
+        //  awsHelper = new AWSHelper(setUpAWS());
+        // awsHelper.connectToAWS();
+        createMapMarkers();
 
         thingySdkManager = ThingySdkManager.getInstance();
         thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, chartManager, componentHealthBar, awsHelper);
@@ -99,14 +114,14 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     @Override
     protected void onDestroy() {
         super.onDestroy();
-       // awsHelper.disconnectFromAWS();
+        // awsHelper.disconnectFromAWS();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-     //   awsHelper.turnLightOff();
+        //   awsHelper.turnLightOff();
 
         if (resultCode == RESULT_OK && data != null) {
             connectedDevice = data.getParcelableExtra(EXTRA_BLUETOOTH);
@@ -166,11 +181,56 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.addMarker(new MarkerOptions().position(dropOffCenter).title("Drop Off Location"));
-        mMap.addMarker(new MarkerOptions().position(theForgeChi).title("The Forge"));
-        mMap.addMarker(new MarkerOptions().position(northwesternMemorialHospital).title("Northwestern Memorial Hospital"));
-        mMap.addMarker(new MarkerOptions().position(rushUniversityHospital).title("Rush University Hospital"));
+        mMap.addMarker(dropOff);
+        mMap.addMarker(currentLocation);
+        mMap.addMarker(northwesternHospital);
+        mMap.addMarker(rushHospital);
+
+        mMap.addPolyline(new PolylineOptions().add(rushUniversityHospital).add(theForgeChi).add(northwesternMemorialHospital).add(dropOffCenter));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(rushUniversityHospital));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(13));
+    }
+
+    private void createMapMarkers() {
+        createBitmaps();
+        dropOff = new MarkerOptions()
+                .position(dropOffCenter)
+                .title(getString(R.string.dropOffLocation))
+                .icon(dropOffIcon);
+
+        currentLocation = new MarkerOptions()
+                .position(theForgeChi)
+                .title(getString(R.string.currentLocation))
+                .icon(currentLocationIcon);
+
+        northwesternHospital = new MarkerOptions()
+                .position(northwesternMemorialHospital)
+                .title(getString(R.string.northwesternHospital))
+                .icon(northwesternHospitalIcon);
+
+        rushHospital = new MarkerOptions()
+                .position(rushUniversityHospital)
+                .title(getString(R.string.rushHospital))
+                .icon(rushHospitalIcon);
+    }
+
+    private void createBitmaps() {
+        dropOffIcon = BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(R.drawable.ic_delete));
+        currentLocationIcon = BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(R.drawable.ic_home));
+        northwesternHospitalIcon = BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(R.drawable.ic_nw_hospital));
+        rushHospitalIcon = BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(R.drawable.ic_rush_hospital));
+    }
+
+
+    public Bitmap getBitmapFromVectorDrawable(int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(this, drawableId);
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 }

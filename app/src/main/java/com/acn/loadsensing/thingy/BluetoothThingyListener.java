@@ -15,18 +15,18 @@ public class BluetoothThingyListener implements ThingyListener {
     private MainActivityViewModel viewModel;
     private ThingySdkManager thingySdkManager;
     private LineChartManager chartManager;
-    private ProgressBar componentHealthBar;
+    private ProgressBar loadWeightBar;
     private AWSHelper awsHelper;
 
     public BluetoothThingyListener(MainActivityViewModel viewModel,
                                    ThingySdkManager thingySdkManager,
                                    LineChartManager chartManager,
-                                   ProgressBar componentHealthBar,
+                                   ProgressBar loadWeightBar,
                                    AWSHelper awsHelper) {
         this.viewModel = viewModel;
         this.thingySdkManager = thingySdkManager;
         this.chartManager = chartManager;
-        this.componentHealthBar = componentHealthBar;
+        this.loadWeightBar = loadWeightBar;
         this.awsHelper = awsHelper;
     }
 
@@ -77,7 +77,7 @@ public class BluetoothThingyListener implements ThingyListener {
 
     @Override
     public void onButtonStateChangedEvent(BluetoothDevice bluetoothDevice, int buttonState) {
-        componentHealthBar.setProgress(100);
+//        loadWeightBar.setProgress(0);
 //        awsHelper.turnLightOff();
     }
 
@@ -103,14 +103,6 @@ public class BluetoothThingyListener implements ThingyListener {
 
     @Override
     public void onAccelerometerValueChangedEvent(BluetoothDevice bluetoothDevice, float x, float y, float z) {
-        chartManager.addAccelerationVectorEntry(x, y, z);
-        if (Math.abs(z) >= 2) {
-            componentHealthBar.incrementProgressBy(-5);
-        }
-
-//        if (componentHealthBar.getProgress() == 0) {
-//            awsHelper.turnLightOn();
-//        }
     }
 
     @Override
@@ -140,7 +132,7 @@ public class BluetoothThingyListener implements ThingyListener {
 
     @Override
     public void onGravityVectorChangedEvent(BluetoothDevice bluetoothDevice, float x, float y, float z) {
-        chartManager.addGravityVectorEntry(x, y, z);
+        loadWeightBar.setProgress(Math.abs((int)x) * 10);
     }
 
     @Override
