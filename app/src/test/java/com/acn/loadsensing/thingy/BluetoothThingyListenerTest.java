@@ -16,6 +16,7 @@ import no.nordicsemi.android.thingylib.ThingySdkManager;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,9 +43,18 @@ public class BluetoothThingyListenerTest {
         BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper);
         when(mockLoadWeightBar.getProgress()).thenReturn(90);
 
-        listener.onGravityVectorChangedEvent(null, 90, 0,0);
+        listener.onGravityVectorChangedEvent(null, 1, 0,0);
 
         verify(mockMapManger).full();
+    }
 
+    @Test
+    public void lessThanFull_doNothing(){
+        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper);
+        when(mockLoadWeightBar.getProgress()).thenReturn(50);
+
+        listener.onGravityVectorChangedEvent(null, 2, 0,0);
+
+        verify(mockMapManger, never()).full();
     }
 }

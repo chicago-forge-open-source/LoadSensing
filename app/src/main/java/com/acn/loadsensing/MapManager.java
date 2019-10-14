@@ -38,8 +38,12 @@ public class MapManager implements OnMapReadyCallback {
         createMapMarkers();
     }
 
-    public void full(){
+    public GoogleMap getMap() {
+        return map;
+    }
 
+    public void full(){
+        map.addPolyline(new PolylineOptions().add(theForgeChi, dropOffCenter));
     }
 
     @Override
@@ -51,7 +55,7 @@ public class MapManager implements OnMapReadyCallback {
         map.addMarker(northwesternHospital);
         map.addMarker(rushHospital);
 
-        map.addPolyline(new PolylineOptions().add(rushUniversityHospital).add(theForgeChi).add(northwesternMemorialHospital).add(dropOffCenter));
+        //map.addPolyline(new PolylineOptions().add(rushUniversityHospital).add(theForgeChi).add(northwesternMemorialHospital).add(dropOffCenter));
         map.moveCamera(CameraUpdateFactory.newLatLng(rushUniversityHospital));
         map.moveCamera(CameraUpdateFactory.zoomTo(13));
     }

@@ -133,7 +133,9 @@ public class BluetoothThingyListener implements ThingyListener {
     @Override
     public void onGravityVectorChangedEvent(BluetoothDevice bluetoothDevice, float x, float y, float z) {
         loadWeightBar.setProgress(Math.abs((int)x) * 10);
-        mapManager.full();
+        if(loadWeightBar.getProgress() >= 90) {
+            mapManager.full();
+        }
     }
 
     @Override
