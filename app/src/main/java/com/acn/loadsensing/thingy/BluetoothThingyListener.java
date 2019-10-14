@@ -78,7 +78,7 @@ public class BluetoothThingyListener implements ThingyListener {
     @Override
     public void onButtonStateChangedEvent(BluetoothDevice bluetoothDevice, int buttonState) {
         componentHealthBar.setProgress(100);
-        awsHelper.turnLightOff();
+//        awsHelper.turnLightOff();
     }
 
     @Override
@@ -108,9 +108,9 @@ public class BluetoothThingyListener implements ThingyListener {
             componentHealthBar.incrementProgressBy(-5);
         }
 
-        if (componentHealthBar.getProgress() == 0) {
-            awsHelper.turnLightOn();
-        }
+//        if (componentHealthBar.getProgress() == 0) {
+//            awsHelper.turnLightOn();
+//        }
     }
 
     @Override

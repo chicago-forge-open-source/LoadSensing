@@ -59,8 +59,8 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
 
         componentHealthBar = findViewById(R.id.component_health_bar);
         componentHealthBar.setProgress(100);
-        awsHelper = new AWSHelper(setUpAWS());
-        awsHelper.connectToAWS();
+      //  awsHelper = new AWSHelper(setUpAWS());
+       // awsHelper.connectToAWS();
 
         thingySdkManager = ThingySdkManager.getInstance();
         thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, chartManager, componentHealthBar, awsHelper);
@@ -84,14 +84,14 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        awsHelper.disconnectFromAWS();
+       // awsHelper.disconnectFromAWS();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        awsHelper.turnLightOff();
+     //   awsHelper.turnLightOff();
 
         if (resultCode == RESULT_OK && data != null) {
             connectedDevice = data.getParcelableExtra(EXTRA_BLUETOOTH);
