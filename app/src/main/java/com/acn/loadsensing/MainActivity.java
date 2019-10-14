@@ -23,6 +23,7 @@ import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.UserStateDetails;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
 import com.github.mikephil.charting.charts.LineChart;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -53,6 +54,11 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     private AWSHelper awsHelper;
     private GoogleMap mMap;
 
+    LatLng dropOffCenter = new LatLng(41.8748568,-87.6383141);
+    LatLng rushUniversityHospital = new LatLng(41.8747095,-87.6706407);
+    LatLng theForgeChi = new LatLng(41.8960417,-87.6535176);
+    LatLng northwesternMemorialHospital = new LatLng(41.8934742,-87.6373256);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        configureCharts();
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
 
@@ -157,22 +162,15 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
         }
     }
 
-    private void configureCharts() {
-//        LineChart gravityChart = findViewById(R.id.line_chart_gravity_vector);
-//        LineChart accelerationChart = findViewById(R.id.line_chart_acceleration_vector);
-//
-//        chartManager = new LineChartManager(gravityChart, accelerationChart);
-//        chartManager.prepareVectorChart(gravityChart, -10f, 10f, "Gravity Chart");
-//        chartManager.prepareVectorChart(accelerationChart, -5f, 5f, "Acceleration Chart");
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.addMarker(new MarkerOptions().position(dropOffCenter).title("Drop Off Location"));
+        mMap.addMarker(new MarkerOptions().position(theForgeChi).title("The Forge"));
+        mMap.addMarker(new MarkerOptions().position(northwesternMemorialHospital).title("Northwestern Memorial Hospital"));
+        mMap.addMarker(new MarkerOptions().position(rushUniversityHospital).title("Rush University Hospital"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(rushUniversityHospital));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(13));
     }
 }
