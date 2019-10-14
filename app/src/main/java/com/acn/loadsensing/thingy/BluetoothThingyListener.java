@@ -5,6 +5,7 @@ import android.widget.ProgressBar;
 
 import com.acn.loadsensing.LineChartManager;
 import com.acn.loadsensing.MainActivityViewModel;
+import com.acn.loadsensing.MapManager;
 import com.acn.loadsensing.helper.AWSHelper;
 
 import no.nordicsemi.android.thingylib.ThingyListener;
@@ -14,18 +15,18 @@ public class BluetoothThingyListener implements ThingyListener {
 
     private MainActivityViewModel viewModel;
     private ThingySdkManager thingySdkManager;
-    private LineChartManager chartManager;
+    private MapManager mapManager;
     private ProgressBar loadWeightBar;
     private AWSHelper awsHelper;
 
     public BluetoothThingyListener(MainActivityViewModel viewModel,
                                    ThingySdkManager thingySdkManager,
-                                   LineChartManager chartManager,
+                                   MapManager mapManager,
                                    ProgressBar loadWeightBar,
                                    AWSHelper awsHelper) {
         this.viewModel = viewModel;
         this.thingySdkManager = thingySdkManager;
-        this.chartManager = chartManager;
+        this.mapManager = mapManager;
         this.loadWeightBar = loadWeightBar;
         this.awsHelper = awsHelper;
     }
@@ -133,6 +134,7 @@ public class BluetoothThingyListener implements ThingyListener {
     @Override
     public void onGravityVectorChangedEvent(BluetoothDevice bluetoothDevice, float x, float y, float z) {
         loadWeightBar.setProgress(Math.abs((int)x) * 10);
+        mapManager.full();
     }
 
     @Override

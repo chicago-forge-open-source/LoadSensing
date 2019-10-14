@@ -5,6 +5,7 @@ import android.widget.ProgressBar;
 
 import com.acn.loadsensing.LineChartManager;
 import com.acn.loadsensing.MainActivityViewModel;
+import com.acn.loadsensing.MapManager;
 import com.acn.loadsensing.helper.AWSHelper;
 
 import org.junit.Test;
@@ -16,21 +17,21 @@ import no.nordicsemi.android.thingylib.ThingySdkManager;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class BluetoothThingyListenerTest {
 
-    private ProgressBar mockComponentHealthBar = mock(ProgressBar.class);
-    private LineChartManager mockChartManager = mock(LineChartManager.class);
+    private ProgressBar mockLoadWeightBar = mock(ProgressBar.class);
+    private MapManager mockMapManger = mock(MapManager.class);
     private AWSHelper awsHelper = mock(AWSHelper.class);
 
     @Test
     public void onServiceDiscoveryCompleted_callsViewModel() {
         ThingySdkManager mockThingySdkManager = mock(ThingySdkManager.class);
         MainActivityViewModel mockViewModel = mock(MainActivityViewModel.class);
-        BluetoothThingyListener listener = new BluetoothThingyListener(mockViewModel, mockThingySdkManager, null, mockComponentHealthBar, null);
+        BluetoothThingyListener listener = new BluetoothThingyListener(mockViewModel, mockThingySdkManager, null, mockLoadWeightBar, null);
 
         listener.onServiceDiscoveryCompleted(null);
 
@@ -38,11 +39,13 @@ public class BluetoothThingyListenerTest {
     }
 
     @Test
-    public void onAccelerometerValueChanged_zValueLessThanTwoDoesNotDecreaseHealthBar() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockChartManager, mockComponentHealthBar, awsHelper);
+    public void OnFull_GoToDump(){
+        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper);
+        when(mockLoadWeightBar.getProgress()).thenReturn(90);
 
-        listener.onAccelerometerValueChangedEvent(null, 1, 2, 1);
+        listener.onGravityVectorChangedEvent(null, 90, 0,0);
 
-        verify(mockComponentHealthBar, never()).incrementProgressBy(-5);
+        verify(mockMapManger).full();
+
     }
 }

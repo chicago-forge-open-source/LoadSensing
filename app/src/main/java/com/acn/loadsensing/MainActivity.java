@@ -37,7 +37,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -54,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     private BluetoothThingyListener thingyListener;
     private ProgressBar componentHealthBar;
     private BleItem connectedDevice;
-    private LineChartManager chartManager;
+    private MapManager mapManager;
     private static final String LOG_TAG = "***";
     private static final String CUSTOMER_SPECIFIC_IOT_ENDPOINT = "a2soq6ydozn6i0-ats.iot.us-west-2.amazonaws.com";
     private AWSHelper awsHelper;
@@ -91,9 +90,10 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
         //  awsHelper = new AWSHelper(setUpAWS());
         // awsHelper.connectToAWS();
         createMapMarkers();
+        mapManager = new MapManager();
 
         thingySdkManager = ThingySdkManager.getInstance();
-        thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, chartManager, componentHealthBar, awsHelper);
+        thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, mapManager, componentHealthBar, awsHelper);
         setConnectOnClickListener();
     }
 
