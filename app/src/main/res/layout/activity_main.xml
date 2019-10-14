@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="androidx.core.content.ContextCompat" />
+
+        <variable
+            name="viewModel"
+            type="com.acn.loadsensing.MainActivityViewModel" />
+
+    </data>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/header_device_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="32sp"
+            android:text="@{viewModel.deviceName}"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/component_health_label"
+        android:text="@string/component_health"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"/>
+
+    <ProgressBar
+        android:id="@+id/component_health_bar"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_marginHorizontal="10dp"
+        android:progressDrawable="@drawable/health_progress_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/component_health_label"/>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="100dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/component_health_bar">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/card_toolbar_gravity"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="@android:color/white"
+                app:popupTheme="@style/ActionBarPopupThemeOverlay"
+                app:title="@string/title_gravity_vector"
+                app:titleMarginStart="@dimen/card_view_toolbar_title_margin"
+                app:titleTextAppearance="@style/Widget.Toolbar" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/line_chart_gravity_vector"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginStart="@dimen/cardview_horizontal_padding"
+                android:layout_marginEnd="@dimen/cardview_horizontal_padding"
+                android:layout_marginBottom="@dimen/cardview_horizontal_padding" />
+
+            <include layout="@layout/chart_table_layout" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/black"/>
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/card_toolbar_acceleration"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:background="@android:color/white"
+                app:popupTheme="@style/ActionBarPopupThemeOverlay"
+                app:title="@string/title_acceleration_vector"
+                app:titleMarginStart="@dimen/card_view_toolbar_title_margin"
+                app:titleTextAppearance="@style/Widget.Toolbar" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/line_chart_acceleration_vector"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginStart="@dimen/cardview_horizontal_padding"
+                android:layout_marginEnd="@dimen/cardview_horizontal_padding"
+                android:layout_marginBottom="@dimen/cardview_horizontal_padding" />
+
+            <include layout="@layout/chart_table_layout" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/connectFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_bluetooth_searching_black_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_margin="10dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

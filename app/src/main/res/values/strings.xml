@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">LoadSensing</string>
+    <string name="connect">Connect</string>
+    <string name="vector_z">Vector Z</string>
+    <string name="vector_y">Vector Y</string>
+    <string name="vector_x">Vector X</string>
+
+    <string name="title_gravity_vector">Gravity Vector</string>
+    <string name="title_acceleration_vector">Acceleration Vector</string>
+    <string name="device_address">Device Address</string>
+    <string name="device_name">Device Name</string>
+    <string name="header_device_name">No Device Connected</string>
+    <string name="component_health">Component Health</string>
+</resources>

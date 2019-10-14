@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="cardview_action_padding">8dp</dimen>
+    <dimen name="cardview_horizontal_padding">0dp</dimen>
+    <dimen name="cardview_vertical_padding">8dp</dimen>
+    <dimen name="card_view_toolbar_title_margin">32dp</dimen>
+    <dimen name="chart_legend">12sp</dimen>
+</resources>

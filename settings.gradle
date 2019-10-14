@@ -1,0 +1,2 @@
+include ':app', ':thingylib'
+rootProject.name='LoadSensing'
