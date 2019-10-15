@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     private MainActivityViewModel viewModel;
     private ThingySdkManager thingySdkManager;
     private BluetoothThingyListener thingyListener;
-    private ProgressBar componentHealthBar;
+    private ProgressBar loadWeightBar;
     private BleItem connectedDevice;
     private MapManager mapManager;
     private static final String LOG_TAG = "***";
@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
 
-        componentHealthBar = findViewById(R.id.component_health_bar);
-        componentHealthBar.setProgress(100);
+        loadWeightBar = findViewById(R.id.load_weight_bar);
+        loadWeightBar.setProgress(100);
         //  awsHelper = new AWSHelper(setUpAWS());
         // awsHelper.connectToAWS();
 
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
 
 
         thingySdkManager = ThingySdkManager.getInstance();
-        thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, mapManager, componentHealthBar, awsHelper, pickupManager);
+        thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, mapManager, loadWeightBar, awsHelper, pickupManager);
         setConnectOnClickListener();
     }
 

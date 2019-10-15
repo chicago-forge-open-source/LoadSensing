@@ -10,8 +10,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.acn.loadsensing.bleItem.BleItem;
 import com.acn.loadsensing.thingy.ThingyService;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 
 import no.nordicsemi.android.thingylib.ThingySdkManager;
 

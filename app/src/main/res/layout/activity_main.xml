@@ -48,7 +48,7 @@
         app:layout_constraintTop_toBottomOf="@id/header"/>
 
     <ProgressBar
-        android:id="@+id/component_health_bar"
+        android:id="@+id/load_weight_bar"
         android:layout_width="match_parent"
         android:layout_height="20dp"
         style="@android:style/Widget.ProgressBar.Horizontal"
@@ -61,7 +61,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/component_health_bar">
+        app:layout_constraintTop_toBottomOf="@id/load_weight_bar">
 
 
     <fragment

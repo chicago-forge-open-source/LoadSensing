@@ -8,14 +8,12 @@ public class PickupLocation {
     private String name;
     private LatLng location;
     private int loadWeight;
-    private BitmapDescriptor bitMap;
     private MarkerOptions markerOptions;
 
     public PickupLocation(String name, LatLng location, int loadWeight, BitmapDescriptor bitMap) {
         this.name = name;
         this.location = location;
         this.loadWeight = loadWeight;
-        this.bitMap = bitMap;
         this.markerOptions = new MarkerOptions().position(location).title(name).icon(bitMap);
     }
 
@@ -23,23 +21,15 @@ public class PickupLocation {
         return name;
     }
 
-    public LatLng getLocation() {
+    LatLng getLocation() {
         return location;
     }
 
-    public int getLoadWeight() {
-        return loadWeight;
-    }
-
-    public BitmapDescriptor getBitMap() {
-        return bitMap;
-    }
-
-    public MarkerOptions getMarkerOptions() {
+    MarkerOptions getMarkerOptions() {
         return markerOptions;
     }
 
-    public boolean weighsLessThanOrEqualTo(int weight) {
+    boolean weighsLessThanOrEqualTo(int weight) {
         return this.loadWeight <= weight;
     }
 }

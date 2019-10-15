@@ -23,11 +23,10 @@ public class MapManager implements OnMapReadyCallback {
     private GoogleMap map;
     private ArrayList<Polyline> polylines = new ArrayList<>();
 
-    public MapManager(Context context, List<PickupLocation> locations, PickupLocation startLocation) {
+    MapManager(Context context, List<PickupLocation> locations, PickupLocation startLocation) {
         this.context = context;
         this.locations = locations;
         this.startLocation = startLocation;
-        createMapMarkers();
     }
 
 
@@ -35,22 +34,26 @@ public class MapManager implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
 
         map = googleMap;
-        for (PickupLocation location : locations) {
-            map.addMarker(location.getMarkerOptions());
-        }
 
+        createMapMarkers();
+        setMarkerClickListeners();
+
+        map.moveCamera(CameraUpdateFactory.newLatLng(startLocation.getLocation()));
+        map.moveCamera(CameraUpdateFactory.zoomTo(13));
+    }
+
+    private void setMarkerClickListeners() {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Uri gmmIntentUri = Uri.parse("google.navigation:q=" + marker.getPosition().toString());
+                String googleNavUri = "google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude;
+                Uri gmmIntentUri = Uri.parse(googleNavUri);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 context.startActivity(mapIntent);
                 return false;
             }
         });
-        map.moveCamera(CameraUpdateFactory.newLatLng(startLocation.getLocation()));
-        map.moveCamera(CameraUpdateFactory.zoomTo(13));
     }
 
 
@@ -65,7 +68,9 @@ public class MapManager implements OnMapReadyCallback {
     }
 
     private void createMapMarkers() {
-
+        for (PickupLocation location : locations) {
+            map.addMarker(location.getMarkerOptions());
+        }
     }
 
 
