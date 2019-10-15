@@ -1,9 +1,14 @@
 package com.acn.loadsensing;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -14,10 +19,12 @@ public class MapManager implements OnMapReadyCallback {
 
     private final List<PickupLocation> locations;
     private final PickupLocation startLocation;
+    private final Context context;
     private GoogleMap map;
     private ArrayList<Polyline> polylines = new ArrayList<>();
 
-    public MapManager(List<PickupLocation> locations, PickupLocation startLocation) {
+    public MapManager(Context context, List<PickupLocation> locations, PickupLocation startLocation) {
+        this.context = context;
         this.locations = locations;
         this.startLocation = startLocation;
         createMapMarkers();
@@ -32,6 +39,16 @@ public class MapManager implements OnMapReadyCallback {
             map.addMarker(location.getMarkerOptions());
         }
 
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Uri gmmIntentUri = Uri.parse("google.navigation:q=" + marker.getPosition().toString());
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                context.startActivity(mapIntent);
+                return false;
+            }
+        });
         map.moveCamera(CameraUpdateFactory.newLatLng(startLocation.getLocation()));
         map.moveCamera(CameraUpdateFactory.zoomTo(13));
     }

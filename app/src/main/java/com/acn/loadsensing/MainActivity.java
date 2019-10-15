@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
         markerLocations.add(northwesternHospital);
         markerLocations.add(rushUniversityHospital);
 
-        mapManager = new MapManager(markerLocations, theForgeChi);
+        mapManager = new MapManager(this, markerLocations, theForgeChi);
         mapFragment.getMapAsync(mapManager);
 
 
