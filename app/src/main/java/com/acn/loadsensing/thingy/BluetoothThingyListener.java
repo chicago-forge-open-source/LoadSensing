@@ -26,6 +26,7 @@ public class BluetoothThingyListener implements ThingyListener {
     private ProgressBar loadWeightBar;
     private AWSHelper awsHelper;
     private PickupManager pickupManager;
+    private boolean tareTop = true;
 
     private float currentGravityX = 0f;
     private float minimumValue = -.55f;
@@ -92,10 +93,14 @@ public class BluetoothThingyListener implements ThingyListener {
     @Override
     public void onButtonStateChangedEvent(BluetoothDevice bluetoothDevice, int buttonState) {
         if(buttonState == BUTTON_DOWN) {
-            minimumValue = currentGravityX;
-        } else {
-            maximumValue = currentGravityX;
+            if(tareTop) {
+                minimumValue = currentGravityX;
+            } else {
+                maximumValue = currentGravityX;
+            }
+            tareTop = !tareTop;
         }
+
     }
 
     @Override
