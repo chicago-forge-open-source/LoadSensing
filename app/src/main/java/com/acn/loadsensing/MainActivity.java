@@ -26,17 +26,13 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.Callback;
 import com.amazonaws.mobile.client.UserStateDetails;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -66,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapManager = new MapManager(this);
-        mapFragment.getMapAsync(mapManager);
 
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
@@ -77,8 +71,30 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
         //  awsHelper = new AWSHelper(setUpAWS());
         // awsHelper.connectToAWS();
 
+
+        ArrayList<PickupLocation> pickupLocations = new ArrayList<>();
+        ArrayList<PickupLocation> markerLocations = new ArrayList<>();
+
+        PickupLocation rushUniversityHospital = new PickupLocation("Rush Hospital", new LatLng(41.8747095, -87.6706407), 50, createBitMapDescriptor(R.drawable.ic_rush_hospital));
+        PickupLocation northwesternHospital = new PickupLocation("Northwestern Hospital", new LatLng(41.8934742, -87.6373256), 30, createBitMapDescriptor(R.drawable.ic_nw_hospital));
+        PickupLocation theForgeChi = new PickupLocation("The Forge", new LatLng(41.8960417, -87.6535176), 10, createBitMapDescriptor(R.drawable.ic_home));
+        PickupLocation dropOffCenter = new PickupLocation("Drop Off Center", new LatLng(41.8748568, -87.6383141), 0, createBitMapDescriptor(R.drawable.ic_delete));
+
+        pickupLocations.add(rushUniversityHospital);
+        pickupLocations.add(northwesternHospital);
+        PickupManager pickupManager  = new PickupManager(pickupLocations, dropOffCenter);
+
+        markerLocations.add(theForgeChi);
+        markerLocations.add(dropOffCenter);
+        markerLocations.add(northwesternHospital);
+        markerLocations.add(rushUniversityHospital);
+
+        mapManager = new MapManager(markerLocations, theForgeChi);
+        mapFragment.getMapAsync(mapManager);
+
+
         thingySdkManager = ThingySdkManager.getInstance();
-        thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, mapManager, componentHealthBar, awsHelper);
+        thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, mapManager, componentHealthBar, awsHelper, pickupManager);
         setConnectOnClickListener();
     }
 
@@ -160,5 +176,21 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
                 viewModel.afterInitialDiscoveryCompleted(thingySdkManager, device);
             }
         }
+    }
+
+    public BitmapDescriptor createBitMapDescriptor(int drawableId) {
+        return BitmapDescriptorFactory.fromBitmap(getBitmapFromVectorDrawable(drawableId));
+    }
+
+    public Bitmap getBitmapFromVectorDrawable(int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(this, drawableId);
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 }

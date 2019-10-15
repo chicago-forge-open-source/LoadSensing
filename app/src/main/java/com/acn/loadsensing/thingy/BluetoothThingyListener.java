@@ -1,33 +1,47 @@
 package com.acn.loadsensing.thingy;
 
 import android.bluetooth.BluetoothDevice;
+import android.util.Log;
 import android.widget.ProgressBar;
 
 import com.acn.loadsensing.MainActivityViewModel;
 import com.acn.loadsensing.MapManager;
+import com.acn.loadsensing.PickupLocation;
+import com.acn.loadsensing.PickupManager;
 import com.acn.loadsensing.helper.AWSHelper;
+
+import java.util.List;
 
 import no.nordicsemi.android.thingylib.ThingyListener;
 import no.nordicsemi.android.thingylib.ThingySdkManager;
 
 public class BluetoothThingyListener implements ThingyListener {
 
+    private static final int BUTTON_UP = 0;
+    private static final int BUTTON_DOWN = 1;
+
     private MainActivityViewModel viewModel;
     private ThingySdkManager thingySdkManager;
     private MapManager mapManager;
     private ProgressBar loadWeightBar;
     private AWSHelper awsHelper;
+    private PickupManager pickupManager;
+
+    private float currentGravityX = 0f;
+    private float minimumValue = -.55f;
+    private float maximumValue = -.05f;
 
     public BluetoothThingyListener(MainActivityViewModel viewModel,
                                    ThingySdkManager thingySdkManager,
                                    MapManager mapManager,
                                    ProgressBar loadWeightBar,
-                                   AWSHelper awsHelper) {
+                                   AWSHelper awsHelper, PickupManager pickupManager) {
         this.viewModel = viewModel;
         this.thingySdkManager = thingySdkManager;
         this.mapManager = mapManager;
         this.loadWeightBar = loadWeightBar;
         this.awsHelper = awsHelper;
+        this.pickupManager = pickupManager;
     }
 
     @Override
@@ -77,8 +91,11 @@ public class BluetoothThingyListener implements ThingyListener {
 
     @Override
     public void onButtonStateChangedEvent(BluetoothDevice bluetoothDevice, int buttonState) {
-//        loadWeightBar.setProgress(0);
-//        awsHelper.turnLightOff();
+        if(buttonState == BUTTON_DOWN) {
+            minimumValue = currentGravityX;
+        } else {
+            maximumValue = currentGravityX;
+        }
     }
 
     @Override
@@ -132,10 +149,13 @@ public class BluetoothThingyListener implements ThingyListener {
 
     @Override
     public void onGravityVectorChangedEvent(BluetoothDevice bluetoothDevice, float x, float y, float z) {
-        loadWeightBar.setProgress(Math.abs((int)x) * 10);
-        if(loadWeightBar.getProgress() >= 90) {
-            mapManager.full();
-        }
+        currentGravityX = x;
+        int percentFull = scaleValue(x, minimumValue, maximumValue);
+        loadWeightBar.setProgress(percentFull);
+
+        List<PickupLocation> locationsToGoTo = pickupManager.getValidLocations(percentFull);
+
+        mapManager.makeDirections(locationsToGoTo);
     }
 
     @Override
@@ -146,5 +166,35 @@ public class BluetoothThingyListener implements ThingyListener {
     @Override
     public void onMicrophoneValueChangedEvent(BluetoothDevice bluetoothDevice, byte[] data) {
 
+    }
+
+    int scaleValue(float value, float minimumValue, float maximumValue) {
+
+        if (minimumValue < 0) {
+            float absMinimum = Math.abs(minimumValue);
+            value += absMinimum;
+            maximumValue += absMinimum;
+            minimumValue += absMinimum;
+        }
+
+        float magnitude = maximumValue - minimumValue;
+
+        return (int) ((value / magnitude) * 100);
+    }
+
+    void setMinimumValue(float minimumValue) {
+        this.minimumValue = minimumValue;
+    }
+
+    float getMinimumValue() {
+        return minimumValue;
+    }
+
+    public float getMaximumValue() {
+        return maximumValue;
+    }
+
+    public void setMaximumValue(float maximumValue) {
+        this.maximumValue = maximumValue;
     }
 }
