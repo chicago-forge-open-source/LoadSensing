@@ -15,8 +15,7 @@ import no.nordicsemi.android.thingylib.ThingySdkManager;
 
 public class BluetoothThingyListener implements ThingyListener {
 
-    private static final int BUTTON_UP = 0;
-    private static final int BUTTON_DOWN = 1;
+     private static final int BUTTON_DOWN = 1;
 
     private MainActivityViewModel viewModel;
     private ThingySdkManager thingySdkManager;
@@ -39,6 +38,8 @@ public class BluetoothThingyListener implements ThingyListener {
         this.mapManager = mapManager;
         this.loadWeightBar = loadWeightBar;
         this.pickupManager = pickupManager;
+
+        loadWeightBar.setProgress(-1);
     }
 
     @Override
@@ -88,8 +89,8 @@ public class BluetoothThingyListener implements ThingyListener {
 
     @Override
     public void onButtonStateChangedEvent(BluetoothDevice bluetoothDevice, int buttonState) {
-        if(buttonState == BUTTON_DOWN) {
-            if(tareTop) {
+        if (buttonState == BUTTON_DOWN) {
+            if (tareTop) {
                 minimumValue = currentGravityX;
             } else {
                 maximumValue = currentGravityX;
@@ -152,11 +153,14 @@ public class BluetoothThingyListener implements ThingyListener {
     public void onGravityVectorChangedEvent(BluetoothDevice bluetoothDevice, float x, float y, float z) {
         currentGravityX = x;
         int percentFull = scaleValue(x, minimumValue, maximumValue);
-        loadWeightBar.setProgress(percentFull);
 
-        List<PickupLocation> locationsToGoTo = pickupManager.getValidLocations(percentFull);
+        if (loadWeightBar.getProgress() != percentFull) {
+            loadWeightBar.setProgress(percentFull);
 
-        mapManager.makeDirections(locationsToGoTo);
+            List<PickupLocation> locationsToGoTo = pickupManager.getValidLocations(percentFull);
+
+            mapManager.makeDirections(locationsToGoTo);
+        }
     }
 
     @Override
@@ -180,7 +184,10 @@ public class BluetoothThingyListener implements ThingyListener {
 
         float magnitude = maximumValue - minimumValue;
 
-        return (int) ((value / magnitude) * 100);
+
+        int number = (int) ((value / magnitude) * 100);
+
+        return (int) Math.round(number / 10.0) * 10;
     }
 
     void setMinimumValue(float minimumValue) {

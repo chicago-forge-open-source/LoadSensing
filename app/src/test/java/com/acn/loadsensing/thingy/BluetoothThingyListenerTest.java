@@ -23,7 +23,9 @@ import static junit.framework.TestCase.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class BluetoothThingyListenerTest {
@@ -36,6 +38,7 @@ public class BluetoothThingyListenerTest {
     private PickupLocation dumpLocation;
 
     private List<PickupLocation> pickupLocations;
+    private BluetoothThingyListener listener;
 
     @Before
     public void setUp() {
@@ -50,6 +53,12 @@ public class BluetoothThingyListenerTest {
         pickupLocations.add(location100);
 
         pickupManager = new PickupManager(pickupLocations, dumpLocation);
+        listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
+    }
+
+    @Test
+    public void constructor_setsProgressBarToNegative1() {
+        verify(mockLoadWeightBar).setProgress(-1);
     }
 
     @Test
@@ -65,7 +74,6 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void truckFull_goToDump() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
         List<PickupLocation> expectedLocationsToGoTo = new ArrayList<>();
         expectedLocationsToGoTo.add(dumpLocation);
 
@@ -77,7 +85,6 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void lessThanFull_goToValidLocations() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
         List<PickupLocation> expectedLocationsToGoTo = new ArrayList<>();
         expectedLocationsToGoTo.add(location20);
 
@@ -89,10 +96,33 @@ public class BluetoothThingyListenerTest {
     }
 
     @Test
-    public void empty_showsAllLocations() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
+    public void justAsFullAsPreviousReading_doesNotRedrawLines() {
+        List<PickupLocation> expectedLocationsToGoTo = new ArrayList<>();
+        expectedLocationsToGoTo.add(location20);
 
+        listener.setMaximumValue(1);
+        listener.setMinimumValue(.0f);
+
+        when(mockLoadWeightBar.getProgress()).thenReturn(70);
+        listener.onGravityVectorChangedEvent(null, .7f, 0, 0);
+
+        verify(mockMapManger, never()).makeDirections(expectedLocationsToGoTo);
+    }
+
+    @Test
+    public void justAsFullAsPreviousReading_doesNotSetProgressAgain() {
+        listener.setMaximumValue(1);
+        listener.setMinimumValue(.0f);
+        when(mockLoadWeightBar.getProgress()).thenReturn(70);
+        listener.onGravityVectorChangedEvent(null, .7f, 0, 0);
+
+        verify(mockLoadWeightBar, never()).setProgress(70);
+    }
+
+    @Test
+    public void empty_showsAllLocations() {
         listener.setMinimumValue(-.55f);
+        when(mockLoadWeightBar.getProgress()).thenReturn(20);
         listener.onGravityVectorChangedEvent(null, -.55f, 0, 0);
 
         verify(mockMapManger).makeDirections(pickupLocations);
@@ -100,8 +130,6 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void scaleValue_valueEqualsMin_returns0() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
-
         int result = listener.scaleValue(-.3f, -.3f, 1f);
 
         assertEquals(0, result);
@@ -109,8 +137,6 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void scaleValue_valueEqualsMax_returns100() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
-
         int result = listener.scaleValue(1f, -.3f, 1f);
 
         assertEquals(100, result);
@@ -118,26 +144,20 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void scaleValue_50percent() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
-
         int result = listener.scaleValue(-.1f, -.3f, .1f);
 
         assertEquals(50, result);
     }
 
     @Test
-    public void scaleValue_75percent() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
-
+    public void scaleValue_upFrom75Percent_to80Percent() {
         int result = listener.scaleValue(0f, -.3f, .1f);
 
-        assertEquals(75, result);
+        assertEquals(80, result);
     }
 
     @Test
     public void scaleValue_minGreaterThanMax_returns0() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
-
         int result = listener.scaleValue(0f, 3f, .1f);
 
         assertEquals(0, result);
@@ -145,17 +165,14 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void scaleValue_bothNegative() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
-
         int result = listener.scaleValue(-.175f, -.2f, -.1f);
 
-        assertEquals(25, result);
+        //25 scales to 30
+        assertEquals(30, result);
     }
 
     @Test
     public void onButtonStateChangedEvent_firstPress_taresTop() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
-
         float expectedMin = 1;
         listener.onGravityVectorChangedEvent(null, expectedMin, 0, 0);
         listener.onButtonStateChangedEvent(null, 1);
@@ -167,8 +184,6 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void onButtonStateChangedEvent_secondPress_taresBottom() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
-
         float expectedMin = .2f;
         float expectedMax = 0f;
         listener.onGravityVectorChangedEvent(null, expectedMin, 0, 0);
@@ -181,6 +196,5 @@ public class BluetoothThingyListenerTest {
 
         float actualMax = listener.getMaximumValue();
         assertEquals(expectedMax, actualMax);
-
     }
 }
