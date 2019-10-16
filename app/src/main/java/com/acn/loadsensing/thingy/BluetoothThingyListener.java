@@ -19,7 +19,7 @@ import no.nordicsemi.android.thingylib.ThingySdkManager;
 public class BluetoothThingyListener implements ThingyListener {
 
     private static final int BUTTON_DOWN = 1;
-    public static final int FULL_THRESHOLD = 90;
+    public static final int FULL_THRESHOLD = 80;
     public static final int CAUTION_THRESHOLD = 50;
 
     private MainActivityViewModel viewModel;
