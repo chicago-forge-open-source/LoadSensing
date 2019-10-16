@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -21,10 +20,6 @@ import com.acn.loadsensing.databinding.ActivityMainBinding;
 import com.acn.loadsensing.deviceScan.DeviceScanActivity;
 import com.acn.loadsensing.thingy.BluetoothThingyListener;
 import com.acn.loadsensing.thingy.ThingyService;
-import com.amazonaws.mobile.client.AWSMobileClient;
-import com.amazonaws.mobile.client.Callback;
-import com.amazonaws.mobile.client.UserStateDetails;
-import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -32,8 +27,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 
 import no.nordicsemi.android.thingylib.ThingyListenerHelper;
 import no.nordicsemi.android.thingylib.ThingySdkManager;
@@ -49,8 +42,6 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     private ProgressBar loadWeightBar;
     private BleItem connectedDevice;
     private MapManager mapManager;
-    private static final String LOG_TAG = "***";
-    private static final String CUSTOMER_SPECIFIC_IOT_ENDPOINT = "a2soq6ydozn6i0-ats.iot.us-west-2.amazonaws.com";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +57,6 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
 
         loadWeightBar = findViewById(R.id.load_weight_bar);
         loadWeightBar.setProgress(100);
-        //  awsHelper = new AWSHelper(setUpAWS());
-        // awsHelper.connectToAWS();
-
 
         ArrayList<PickupLocation> pickupLocations = new ArrayList<>();
         ArrayList<PickupLocation> markerLocations = new ArrayList<>();
@@ -80,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
 
         pickupLocations.add(rushUniversityHospital);
         pickupLocations.add(northwesternHospital);
-        PickupManager pickupManager  = new PickupManager(pickupLocations, dropOffCenter);
+        PickupManager pickupManager = new PickupManager(pickupLocations, dropOffCenter);
 
         markerLocations.add(theForgeChi);
         markerLocations.add(dropOffCenter);
@@ -89,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
 
         mapManager = new MapManager(this, markerLocations, theForgeChi);
         mapFragment.getMapAsync(mapManager);
-
 
         thingySdkManager = ThingySdkManager.getInstance();
         thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, mapManager, loadWeightBar, pickupManager);
@@ -113,46 +100,16 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // awsHelper.disconnectFromAWS();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        //   awsHelper.turnLightOff();
-
         if (resultCode == RESULT_OK && data != null) {
             connectedDevice = data.getParcelableExtra(EXTRA_BLUETOOTH);
             viewModel.connectToDevice(this, thingySdkManager, connectedDevice);
         }
-    }
-
-    private AWSIotMqttManager setUpAWS() {
-        final CountDownLatch latch = new CountDownLatch(1);
-        AWSMobileClient.getInstance().initialize(
-                this,
-                new Callback<UserStateDetails>() {
-                    @Override
-                    public void onResult(UserStateDetails result) {
-                        latch.countDown();
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        latch.countDown();
-                        Log.e(LOG_TAG, "onError: ", e);
-                    }
-                }
-        );
-
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        String clientId = UUID.randomUUID().toString();
-        return new AWSIotMqttManager(clientId, CUSTOMER_SPECIFIC_IOT_ENDPOINT);
     }
 
     private void setConnectOnClickListener() {

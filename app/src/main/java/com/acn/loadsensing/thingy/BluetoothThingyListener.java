@@ -191,11 +191,11 @@ public class BluetoothThingyListener implements ThingyListener {
         return minimumValue;
     }
 
-    public float getMaximumValue() {
+    float getMaximumValue() {
         return maximumValue;
     }
 
-    public void setMaximumValue(float maximumValue) {
+    void setMaximumValue(float maximumValue) {
         this.maximumValue = maximumValue;
     }
 }
