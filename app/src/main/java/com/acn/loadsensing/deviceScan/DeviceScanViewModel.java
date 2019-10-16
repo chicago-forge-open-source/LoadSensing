@@ -24,7 +24,7 @@ public class DeviceScanViewModel extends ViewModel {
     private MutableLiveData<List<BleItem>> _items = new MutableLiveData<>();
     public LiveData<List<BleItem>> items = _items;
 
-    DeviceScanViewModel() {
+    public DeviceScanViewModel() {
         _items.setValue(Collections.<BleItem>emptyList());
     }
 
