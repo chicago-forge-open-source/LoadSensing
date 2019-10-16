@@ -178,9 +178,7 @@ public class BluetoothThingyListener implements ThingyListener {
         if(percentFull >= FULL_THRESHOLD) {
             loadWeightBar.setProgressDrawable(redDrawable);
         }
-        else if (percentFull >= CAUTION_THRESHOLD) {
-            loadWeightBar.setProgressDrawable(yellowDrawable);
-        } else {
+        else {
             loadWeightBar.setProgressDrawable(greenDrawable);
         }
     }

@@ -228,16 +228,4 @@ public class BluetoothThingyListenerTest {
 
         verify(mockLoadWeightBar).setProgressDrawable(mockDrawable);
     }
-
-    @Test
-    public void crossCautionThreshold_setsProgressBarYellow() {
-        Drawable mockDrawable = mock(Drawable.class);
-        listener.setYellowDrawable(mockDrawable);
-
-        listener.setMaximumValue(1);
-        listener.setMinimumValue(.0f);
-        listener.onGravityVectorChangedEvent(null, .55f, 0, 0);
-
-        verify(mockLoadWeightBar).setProgressDrawable(mockDrawable);
-    }
 }
