@@ -1,12 +1,15 @@
 package com.acn.loadsensing.thingy;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.widget.ProgressBar;
 
 import com.acn.loadsensing.MainActivityViewModel;
 import com.acn.loadsensing.MapManager;
 import com.acn.loadsensing.PickupLocation;
 import com.acn.loadsensing.PickupManager;
+import com.acn.loadsensing.R;
 
 import java.util.List;
 
@@ -15,7 +18,9 @@ import no.nordicsemi.android.thingylib.ThingySdkManager;
 
 public class BluetoothThingyListener implements ThingyListener {
 
-     private static final int BUTTON_DOWN = 1;
+    private static final int BUTTON_DOWN = 1;
+    public static final int FULL_THRESHOLD = 90;
+    public static final int CAUTION_THRESHOLD = 50;
 
     private MainActivityViewModel viewModel;
     private ThingySdkManager thingySdkManager;
@@ -23,6 +28,10 @@ public class BluetoothThingyListener implements ThingyListener {
     private ProgressBar loadWeightBar;
     private PickupManager pickupManager;
     private boolean tareTop = true;
+
+    private Drawable greenDrawable;
+    private Drawable yellowDrawable;
+    private Drawable redDrawable;
 
     private float currentGravityX = 0f;
     private float minimumValue = -.55f;
@@ -157,9 +166,22 @@ public class BluetoothThingyListener implements ThingyListener {
         if (loadWeightBar.getProgress() != percentFull) {
             loadWeightBar.setProgress(percentFull);
 
+            setProgressBarDrawable(percentFull);
+
             List<PickupLocation> locationsToGoTo = pickupManager.getValidLocations(percentFull);
 
             mapManager.makeDirections(locationsToGoTo);
+        }
+    }
+
+    private void setProgressBarDrawable(int percentFull) {
+        if(percentFull >= FULL_THRESHOLD) {
+            loadWeightBar.setProgressDrawable(redDrawable);
+        }
+        else if (percentFull >= CAUTION_THRESHOLD) {
+            loadWeightBar.setProgressDrawable(yellowDrawable);
+        } else {
+            loadWeightBar.setProgressDrawable(greenDrawable);
         }
     }
 
@@ -204,5 +226,17 @@ public class BluetoothThingyListener implements ThingyListener {
 
     void setMaximumValue(float maximumValue) {
         this.maximumValue = maximumValue;
+    }
+
+    public void setGreenDrawable(Drawable greenDrawable) {
+        this.greenDrawable = greenDrawable;
+    }
+
+    public void setYellowDrawable(Drawable yellowDrawable) {
+        this.yellowDrawable = yellowDrawable;
+    }
+
+    public void setRedDrawable(Drawable redDrawable) {
+        this.redDrawable = redDrawable;
     }
 }

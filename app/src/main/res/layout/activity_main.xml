@@ -53,7 +53,7 @@
         android:layout_height="20dp"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_marginHorizontal="10dp"
-        android:progressDrawable="@drawable/health_progress_bar"
+        android:progressDrawable="@drawable/health_progress_bar_green"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/load_weight_label"/>

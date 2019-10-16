@@ -80,6 +80,10 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
 
         thingySdkManager = ThingySdkManager.getInstance();
         thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, mapManager, loadWeightBar, pickupManager);
+        thingyListener.setGreenDrawable(getDrawable(R.drawable.health_progress_bar_green));
+        thingyListener.setYellowDrawable(getDrawable(R.drawable.health_progress_bar_yellow));
+        thingyListener.setRedDrawable(getDrawable(R.drawable.health_progress_bar_red));
+
         setConnectOnClickListener();
     }
 

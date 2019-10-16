@@ -1,7 +1,12 @@
 package com.acn.loadsensing.thingy;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.widget.ProgressBar;
+
+import androidx.appcompat.graphics.drawable.DrawableWrapper;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.acn.loadsensing.MainActivityViewModel;
 import com.acn.loadsensing.MapManager;
@@ -21,8 +26,10 @@ import no.nordicsemi.android.thingylib.ThingySdkManager;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,7 +39,6 @@ public class BluetoothThingyListenerTest {
 
     private ProgressBar mockLoadWeightBar = mock(ProgressBar.class);
     private MapManager mockMapManger = mock(MapManager.class);
-
     private PickupManager pickupManager;
     private PickupLocation location20;
     private PickupLocation dumpLocation;
@@ -53,6 +59,7 @@ public class BluetoothThingyListenerTest {
         pickupLocations.add(location100);
 
         pickupManager = new PickupManager(pickupLocations, dumpLocation);
+
         listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
     }
 
@@ -196,5 +203,41 @@ public class BluetoothThingyListenerTest {
 
         float actualMax = listener.getMaximumValue();
         assertEquals(expectedMax, actualMax);
+    }
+
+    @Test
+    public void crossFullThreshold_setsProgressBarRed() {
+        Drawable mockDrawable = mock(Drawable.class);
+        listener.setRedDrawable(mockDrawable);
+
+        listener.setMaximumValue(1);
+        listener.setMinimumValue(.0f);
+        listener.onGravityVectorChangedEvent(null, .95f, 0, 0);
+
+        verify(mockLoadWeightBar).setProgressDrawable(mockDrawable);
+    }
+
+    @Test
+    public void crossEmptyThreshold_setsProgressBarGreen() {
+        Drawable mockDrawable = mock(Drawable.class);
+        listener.setGreenDrawable(mockDrawable);
+
+        listener.setMaximumValue(1);
+        listener.setMinimumValue(.0f);
+        listener.onGravityVectorChangedEvent(null, .1f, 0, 0);
+
+        verify(mockLoadWeightBar).setProgressDrawable(mockDrawable);
+    }
+
+    @Test
+    public void crossCautionThreshold_setsProgressBarYellow() {
+        Drawable mockDrawable = mock(Drawable.class);
+        listener.setYellowDrawable(mockDrawable);
+
+        listener.setMaximumValue(1);
+        listener.setMinimumValue(.0f);
+        listener.onGravityVectorChangedEvent(null, .55f, 0, 0);
+
+        verify(mockLoadWeightBar).setProgressDrawable(mockDrawable);
     }
 }
