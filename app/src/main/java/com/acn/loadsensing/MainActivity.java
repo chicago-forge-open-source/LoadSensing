@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModelProviders;
 import com.acn.loadsensing.bleItem.BleItem;
 import com.acn.loadsensing.databinding.ActivityMainBinding;
 import com.acn.loadsensing.deviceScan.DeviceScanActivity;
-import com.acn.loadsensing.helper.AWSHelper;
 import com.acn.loadsensing.thingy.BluetoothThingyListener;
 import com.acn.loadsensing.thingy.ThingyService;
 import com.amazonaws.mobile.client.AWSMobileClient;
@@ -52,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
     private MapManager mapManager;
     private static final String LOG_TAG = "***";
     private static final String CUSTOMER_SPECIFIC_IOT_ENDPOINT = "a2soq6ydozn6i0-ats.iot.us-west-2.amazonaws.com";
-    private AWSHelper awsHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements ThingySdkManager.
 
 
         thingySdkManager = ThingySdkManager.getInstance();
-        thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, mapManager, loadWeightBar, awsHelper, pickupManager);
+        thingyListener = new BluetoothThingyListener(viewModel, thingySdkManager, mapManager, loadWeightBar, pickupManager);
         setConnectOnClickListener();
     }
 

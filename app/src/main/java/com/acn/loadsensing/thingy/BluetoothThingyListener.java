@@ -1,14 +1,12 @@
 package com.acn.loadsensing.thingy;
 
 import android.bluetooth.BluetoothDevice;
-import android.util.Log;
 import android.widget.ProgressBar;
 
 import com.acn.loadsensing.MainActivityViewModel;
 import com.acn.loadsensing.MapManager;
 import com.acn.loadsensing.PickupLocation;
 import com.acn.loadsensing.PickupManager;
-import com.acn.loadsensing.helper.AWSHelper;
 
 import java.util.List;
 
@@ -24,7 +22,6 @@ public class BluetoothThingyListener implements ThingyListener {
     private ThingySdkManager thingySdkManager;
     private MapManager mapManager;
     private ProgressBar loadWeightBar;
-    private AWSHelper awsHelper;
     private PickupManager pickupManager;
     private boolean tareTop = true;
 
@@ -36,12 +33,11 @@ public class BluetoothThingyListener implements ThingyListener {
                                    ThingySdkManager thingySdkManager,
                                    MapManager mapManager,
                                    ProgressBar loadWeightBar,
-                                   AWSHelper awsHelper, PickupManager pickupManager) {
+                                   PickupManager pickupManager) {
         this.viewModel = viewModel;
         this.thingySdkManager = thingySdkManager;
         this.mapManager = mapManager;
         this.loadWeightBar = loadWeightBar;
-        this.awsHelper = awsHelper;
         this.pickupManager = pickupManager;
     }
 

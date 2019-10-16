@@ -7,11 +7,9 @@ import com.acn.loadsensing.MainActivityViewModel;
 import com.acn.loadsensing.MapManager;
 import com.acn.loadsensing.PickupLocation;
 import com.acn.loadsensing.PickupManager;
-import com.acn.loadsensing.helper.AWSHelper;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -33,7 +31,6 @@ public class BluetoothThingyListenerTest {
     private ProgressBar mockLoadWeightBar = mock(ProgressBar.class);
     private MapManager mockMapManger = mock(MapManager.class);
     private PickupManager pickupManager;
-    private AWSHelper awsHelper = mock(AWSHelper.class);
 
     private PickupLocation location20;
     private PickupLocation dumpLocation;
@@ -59,7 +56,7 @@ public class BluetoothThingyListenerTest {
     public void onServiceDiscoveryCompleted_callsViewModel() {
         ThingySdkManager mockThingySdkManager = mock(ThingySdkManager.class);
         MainActivityViewModel mockViewModel = mock(MainActivityViewModel.class);
-        BluetoothThingyListener listener = new BluetoothThingyListener(mockViewModel, mockThingySdkManager, null, mockLoadWeightBar, null, pickupManager);
+        BluetoothThingyListener listener = new BluetoothThingyListener(mockViewModel, mockThingySdkManager, null, mockLoadWeightBar, pickupManager);
 
         listener.onServiceDiscoveryCompleted(null);
 
@@ -68,7 +65,7 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void truckFull_goToDump() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper, pickupManager);
+        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
         List<PickupLocation> expectedLocationsToGoTo = new ArrayList<>();
         expectedLocationsToGoTo.add(dumpLocation);
 
@@ -80,7 +77,7 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void lessThanFull_goToValidLocations() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper, pickupManager);
+        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
         List<PickupLocation> expectedLocationsToGoTo = new ArrayList<>();
         expectedLocationsToGoTo.add(location20);
 
@@ -93,7 +90,7 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void empty_showsAllLocations() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper, pickupManager);
+        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
 
         listener.setMinimumValue(-.55f);
         listener.onGravityVectorChangedEvent(null, -.55f, 0, 0);
@@ -103,7 +100,7 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void scaleValue_valueEqualsMin_returns0() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper, pickupManager);
+        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
 
         int result = listener.scaleValue(-.3f, -.3f, 1f);
 
@@ -112,7 +109,7 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void scaleValue_valueEqualsMax_returns100() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper, pickupManager);
+        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
 
         int result = listener.scaleValue(1f, -.3f, 1f);
 
@@ -121,7 +118,7 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void scaleValue_50percent() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper, pickupManager);
+        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
 
         int result = listener.scaleValue(-.1f, -.3f, .1f);
 
@@ -130,7 +127,7 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void scaleValue_75percent() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper, pickupManager);
+        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
 
         int result = listener.scaleValue(0f, -.3f, .1f);
 
@@ -139,7 +136,7 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void scaleValue_minGreaterThanMax_returns0() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper, pickupManager);
+        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
 
         int result = listener.scaleValue(0f, 3f, .1f);
 
@@ -148,7 +145,7 @@ public class BluetoothThingyListenerTest {
 
     @Test
     public void scaleValue_bothNegative() {
-        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, awsHelper, pickupManager);
+        BluetoothThingyListener listener = new BluetoothThingyListener(null, null, mockMapManger, mockLoadWeightBar, pickupManager);
 
         int result = listener.scaleValue(-.175f, -.2f, -.1f);
 
